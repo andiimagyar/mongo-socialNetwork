@@ -4,7 +4,8 @@ const ThoughtSchema = new Schema({
     thoughtText: {
         type: String,
         required: true,
-        min: 1-280, 
+        minlength: 1,
+        maxlength: 280, 
     },
     createdAt: {
         type: Date,
@@ -28,11 +29,12 @@ const ThoughtSchema = new Schema({
 const ReactionSchema = new Schema({
     reactionId: {
         type: Schema.Types.ObjectId,
+        //default: new.ObjectId
     },
     reactionBody: {
         type: String,
         required: true,
-        max: 280
+        maxlength: 280
     },
     username: {
         type: String,
@@ -40,7 +42,7 @@ const ReactionSchema = new Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: () => Date.now()
     }
 })
 
