@@ -73,8 +73,8 @@ const userController = {
     }
     )
     .then(user => {
-        User.findByIdAndUpdate(user._id, {$push: { friends: req.params.friendId}})
-        .then(res.json(dbUserData))
+        User.findByIdAndUpdate(user._id, {$push: { friends: req.params.friendId}}, { new: true, runValidators: true })
+        .then(res.json(user))
     })
     .catch(err => res.status(400).json(err));
 },

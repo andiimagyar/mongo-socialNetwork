@@ -2,7 +2,7 @@ const { Thought, User } = require('../models');
 
 const thoughtController = {
 
-    getAllThought: (req, res) => {
+    getAllThought(req, res) {
         Thought.find({})
         .populate({
             path: 'reaction',
@@ -43,14 +43,11 @@ const thoughtController = {
             return User.findOneAndUpdate(
                 {_id: params.userId },
                 { $push: { thoughts: _id } },
-                { new: true }
+                { new: true, runValidators: true }
             )
         })
         .then(dbUserData => {
-            if (!dbUserData) {
-                res.status(404).json({ message: "No user found with this id!"})
-                return;
-            }
+            
             res.json(dbUserData);
         })
         .catch(err => res.json(err))
@@ -97,11 +94,17 @@ const thoughtController = {
     },
 
     deleteReaction( {params}, res) {
-        Thought.findOneAndUpdate(
-            {_id: params.thoughtId },
-            { $pull: { reacted: { reactionId: params.reactionId }}},
-            { new: true }
-        )
+        Thought.findOneAndDelete({_id: params.thoughtId })
+        .then(deletedReaction => {
+            if (!deletedReaction) {
+                return res.status(404).json({ message: "No reaction found with this id!"})
+            }
+            return User.findOneAndUpdate(
+                {_id: params.pizzaId },
+                { $pull: {thoughts: params.thoughtId } },
+                { new: true }
+            );
+            })
         .then(dbUserData => res.json(dbUserData))
         .catch(err => res.json(err))
     }
